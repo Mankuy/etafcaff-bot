@@ -8,6 +8,7 @@ const {
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const CURRENCY = process.env.CURRENCY || '$';
+const WEBHOOK_URL = process.env.WEBHOOK_URL; // e.g., https://your-app.railway.app
 
 if (!token || token === 'tu_token_aqui') {
   console.log('⚠️  TELEGRAM_BOT_TOKEN no configurado. Bot deshabilitado.');
@@ -15,7 +16,16 @@ if (!token || token === 'tu_token_aqui') {
   return;
 }
 
-const bot = new TelegramBot(token, { polling: true });
+// Use webhook in production, polling in development
+let bot;
+if (WEBHOOK_URL) {
+  bot = new TelegramBot(token);
+  bot.setWebHook(`${WEBHOOK_URL}/bot${token}`);
+  console.log(`🌐 Bot en modo Webhook: ${WEBHOOK_URL}`);
+} else {
+  bot = new TelegramBot(token, { polling: true });
+  console.log('📡 Bot en modo Polling (local)');
+}
 
 // Format number with thousands separator
 function formatMoney(amount) {

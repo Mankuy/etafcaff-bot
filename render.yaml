@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: finanzas-dashboard
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: WEBHOOK_URL
+        sync: false
+      - key: PORT
+        value: 3000
+      - key: CURRENCY
+        value: $

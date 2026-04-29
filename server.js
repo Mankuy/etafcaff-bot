@@ -105,21 +105,37 @@ app.get('/api/monthly', (req, res) => {
   }
 });
 
+// Health check endpoint (for Railway/Render monitoring)
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', uptime: process.uptime() });
+});
+
 // SPA fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // ─── Start Server ────────────────────────────────────────────
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀 Servidor corriendo en http://localhost:${PORT}`);
   console.log(`📊 Dashboard disponible en http://localhost:${PORT}\n`);
 
   // Start Telegram bot if token is configured
   if (process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_BOT_TOKEN !== 'tu_token_aqui') {
     try {
-      require('./telegram-bot');
-      console.log('🤖 Bot de Telegram activo\n');
+      const bot = require('./telegram-bot');
+
+      // Set up webhook route if in webhook mode
+      if (process.env.WEBHOOK_URL && bot) {
+        const token = process.env.TELEGRAM_BOT_TOKEN;
+        app.post(`/bot${token}`, (req, res) => {
+          bot.processUpdate(req.body);
+          res.sendStatus(200);
+        });
+        console.log('🤖 Bot de Telegram activo (modo Webhook)\n');
+      } else {
+        console.log('🤖 Bot de Telegram activo (modo Polling)\n');
+      }
     } catch (err) {
       console.error('⚠️  Error al iniciar el bot de Telegram:', err.message);
     }
