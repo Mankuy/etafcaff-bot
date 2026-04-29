@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dashboard de finanzas personales">
+  <title>Mis Finanzas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="app">
+    <header class="header" id="app-header">
+      <div class="header-content">
+        <div class="logo">
+          <span class="logo-icon">💰</span>
+          <h1>Mis Finanzas</h1>
+        </div>
+        <div class="header-date" id="header-date"></div>
+      </div>
+    </header>
+
+    <section class="cards-grid" id="cards-section">
+      <div class="card card-balance" id="card-balance">
+        <div class="card-label">Balance Disponible</div>
+        <div class="card-amount balance-amount" id="balance-amount">$0.00</div>
+        <div class="card-subtitle" id="balance-subtitle">Cargando...</div>
+      </div>
+      <div class="card card-income" id="card-income">
+        <div class="card-icon">📥</div>
+        <div class="card-label">Ingresos</div>
+        <div class="card-amount" id="income-amount">$0.00</div>
+      </div>
+      <div class="card card-expense" id="card-expense">
+        <div class="card-icon">📤</div>
+        <div class="card-label">Egresos</div>
+        <div class="card-amount" id="expense-amount">$0.00</div>
+      </div>
+    </section>
+
+    <div class="main-content">
+      <div class="left-panel">
+        <section class="card form-card" id="form-section">
+          <h2 class="section-title">Nuevo Movimiento</h2>
+          <form id="transaction-form">
+            <div class="form-type-toggle">
+              <button type="button" class="type-btn active" data-type="egreso" id="btn-type-egreso">
+                <span class="type-icon">📤</span> Gasto
+              </button>
+              <button type="button" class="type-btn" data-type="ingreso" id="btn-type-ingreso">
+                <span class="type-icon">📥</span> Ingreso
+              </button>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="input-amount">Monto</label>
+                <div class="input-with-prefix">
+                  <span class="input-prefix">$</span>
+                  <input type="number" id="input-amount" placeholder="0.00" step="0.01" min="0.01" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="input-date">Fecha</label>
+                <input type="date" id="input-date" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="input-description">Descripción</label>
+              <input type="text" id="input-description" placeholder="Ej: Almuerzo, Cobro freelance..." required>
+            </div>
+            <div class="form-group">
+              <label for="input-category">Categoría</label>
+              <select id="input-category">
+                <option value="General">General</option>
+                <option value="Comida">Comida</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Servicios">Servicios</option>
+                <option value="Entretenimiento">Entretenimiento</option>
+                <option value="Salud">Salud</option>
+                <option value="Trabajo">Trabajo</option>
+                <option value="Educacion">Educación</option>
+                <option value="Hogar">Hogar</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-submit" id="btn-submit">
+              <span class="btn-text">Agregar Gasto</span>
+              <span class="btn-icon">→</span>
+            </button>
+          </form>
+        </section>
+
+        <section class="card chart-card" id="chart-section">
+          <h2 class="section-title">Gastos por Categoría</h2>
+          <div class="chart-container" id="category-chart">
+            <div class="chart-empty">Sin datos aún</div>
+          </div>
+        </section>
+      </div>
+
+      <div class="right-panel">
+        <section class="card transactions-card" id="transactions-section">
+          <div class="section-header">
+            <h2 class="section-title">Movimientos</h2>
+            <span class="transaction-count" id="transaction-count">0</span>
+          </div>
+          <div class="transactions-list" id="transactions-list">
+            <div class="empty-state">
+              <div class="empty-icon">📭</div>
+              <p>No hay movimientos registrados</p>
+              <p class="empty-hint">Agregá tu primer ingreso o gasto</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="toast" id="toast">
+      <span class="toast-icon" id="toast-icon"></span>
+      <span class="toast-message" id="toast-message"></span>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
