@@ -1,132 +1,176 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Dashboard de finanzas personales">
-  <title>Mis Finanzas</title>
+  <meta name="description" content="Caja EtafCaff - Gestión Premium">
+  <title>Caja EtafCaff</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="bg-orbs">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
+  <!-- Fondos dinámicos (Mesh Gradient) -->
+  <div class="bg-mesh">
+    <div class="mesh-blob blob-1"></div>
+    <div class="mesh-blob blob-2"></div>
+    <div class="mesh-blob blob-3"></div>
   </div>
 
-  <div class="app">
-    <header class="header" id="app-header">
-      <div class="header-content">
-        <div class="logo">
-          <span class="logo-icon">💰</span>
-          <h1>Mis Finanzas</h1>
+  <div class="app-container">
+    <header class="app-header" id="app-header">
+      <div class="header-left">
+        <div class="logo-container">
+          <div class="logo-icon-wrapper">
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+              <circle cx="12" cy="12" r="2"></circle>
+              <path d="M6 12h.01M18 12h.01"></path>
+            </svg>
+          </div>
+          <h1>Caja EtafCaff</h1>
         </div>
+      </div>
+      <div class="header-right">
         <div class="header-date" id="header-date"></div>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
       </div>
     </header>
 
-    <section class="cards-grid" id="cards-section">
-      <div class="card card-balance" id="card-balance">
-        <div class="card-label">Balance Disponible</div>
-        <div class="card-amount balance-amount" id="balance-amount">$0.00</div>
-        <div class="card-subtitle" id="balance-subtitle">Cargando...</div>
-      </div>
-      <div class="card card-income" id="card-income">
-        <div class="card-icon">📥</div>
-        <div class="card-label">Ingresos</div>
-        <div class="card-amount" id="income-amount">$0.00</div>
-      </div>
-      <div class="card card-expense" id="card-expense">
-        <div class="card-icon">📤</div>
-        <div class="card-label">Egresos</div>
-        <div class="card-amount" id="expense-amount">$0.00</div>
-      </div>
-    </section>
-
-    <div class="main-content">
-      <div class="left-panel">
-        <section class="card form-card" id="form-section">
-          <h2 class="section-title">Nuevo Movimiento</h2>
-          <form id="transaction-form">
-            <div class="form-type-toggle">
-              <button type="button" class="type-btn active" data-type="egreso" id="btn-type-egreso">
-                <span class="type-icon">📤</span> Gasto
-              </button>
-              <button type="button" class="type-btn" data-type="ingreso" id="btn-type-ingreso">
-                <span class="type-icon">📥</span> Ingreso
-              </button>
+    <main class="dashboard-grid">
+      <!-- KPIs Superiores -->
+      <section class="kpi-section">
+        <div class="kpi-card glass balance-kpi">
+          <div class="kpi-header">
+            <span class="kpi-label">Balance Total</span>
+            <div class="kpi-icon-wrapper balance-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="input-amount">Monto</label>
-                <div class="input-with-prefix">
-                  <span class="input-prefix">$</span>
-                  <input type="number" id="input-amount" placeholder="0.00" step="0.01" min="0.01" required>
+          </div>
+          <div class="kpi-amount" id="balance-amount">$0.00</div>
+          <div class="kpi-subtitle" id="balance-subtitle">Cargando datos...</div>
+        </div>
+
+        <div class="kpi-card glass income-kpi">
+          <div class="kpi-header">
+            <span class="kpi-label">Ingresos</span>
+            <div class="kpi-icon-wrapper income-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+            </div>
+          </div>
+          <div class="kpi-amount" id="income-amount">$0.00</div>
+        </div>
+
+        <div class="kpi-card glass expense-kpi">
+          <div class="kpi-header">
+            <span class="kpi-label">Gastos</span>
+            <div class="kpi-icon-wrapper expense-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg>
+            </div>
+          </div>
+          <div class="kpi-amount" id="expense-amount">$0.00</div>
+        </div>
+      </section>
+
+      <div class="content-split">
+        <!-- Panel Izquierdo: Formulario y Gráfico -->
+        <div class="left-panel">
+          <section class="glass form-card">
+            <h2 class="section-title">Nuevo Movimiento</h2>
+            <form id="transaction-form" class="modern-form">
+              <div class="form-type-toggle">
+                <input type="radio" id="type-egreso" name="tx-type" value="egreso" checked>
+                <label for="type-egreso" class="toggle-btn expense-btn">Gasto</label>
+                
+                <input type="radio" id="type-ingreso" name="tx-type" value="ingreso">
+                <label for="type-ingreso" class="toggle-btn income-btn">Ingreso</label>
+                <div class="toggle-slider"></div>
+              </div>
+
+              <div class="form-row">
+                <div class="input-group">
+                  <label for="input-amount">Monto</label>
+                  <div class="input-wrapper amount-wrapper">
+                    <span class="prefix">$</span>
+                    <input type="number" id="input-amount" placeholder="0.00" step="0.01" min="0.01" required>
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label for="input-date">Fecha</label>
+                  <div class="input-wrapper">
+                    <input type="date" id="input-date" required>
+                  </div>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="input-date">Fecha</label>
-                <input type="date" id="input-date" required>
+
+              <div class="input-group">
+                <label for="input-description">Descripción</label>
+                <div class="input-wrapper">
+                  <input type="text" id="input-description" placeholder="Ej: Cena, Sueldo, Suscripción..." required>
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="input-category">Categoría</label>
+                <div class="select-wrapper">
+                  <select id="input-category">
+                    <option value="General">General</option>
+                    <option value="Comida">Comida</option>
+                    <option value="Transporte">Transporte</option>
+                    <option value="Servicios">Servicios</option>
+                    <option value="Entretenimiento">Entretenimiento</option>
+                    <option value="Salud">Salud</option>
+                    <option value="Trabajo">Trabajo</option>
+                    <option value="Educacion">Educación</option>
+                    <option value="Hogar">Hogar</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                  <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+
+              <button type="submit" class="btn-primary" id="btn-submit">
+                <span class="btn-text">Registrar</span>
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </button>
+            </form>
+          </section>
+
+          <section class="glass chart-card">
+            <h2 class="section-title">Distribución de Gastos</h2>
+            <div class="chart-container" id="category-chart">
+              <!-- Renderizado por JS -->
+            </div>
+          </section>
+        </div>
+
+        <!-- Panel Derecho: Lista de Transacciones -->
+        <div class="right-panel">
+          <section class="glass list-card">
+            <div class="list-header">
+              <h2 class="section-title">Historial</h2>
+              <div class="badge" id="transaction-count">0</div>
+            </div>
+            
+            <div class="transactions-list" id="transactions-list">
+              <!-- Renderizado por JS -->
+              <div class="empty-state">
+                <div class="empty-illustration"></div>
+                <p>Tu caja está vacía</p>
+                <span>Registra tu primer movimiento</span>
               </div>
             </div>
-            <div class="form-group">
-              <label for="input-description">Descripción</label>
-              <input type="text" id="input-description" placeholder="Ej: Almuerzo, Cobro freelance..." required>
-            </div>
-            <div class="form-group">
-              <label for="input-category">Categoría</label>
-              <select id="input-category">
-                <option value="General">General</option>
-                <option value="Comida">Comida</option>
-                <option value="Transporte">Transporte</option>
-                <option value="Servicios">Servicios</option>
-                <option value="Entretenimiento">Entretenimiento</option>
-                <option value="Salud">Salud</option>
-                <option value="Trabajo">Trabajo</option>
-                <option value="Educacion">Educación</option>
-                <option value="Hogar">Hogar</option>
-                <option value="Otro">Otro</option>
-              </select>
-            </div>
-            <button type="submit" class="btn-submit" id="btn-submit">
-              <span class="btn-text">Agregar Gasto</span>
-              <span class="btn-icon">→</span>
-            </button>
-          </form>
-        </section>
-
-        <section class="card chart-card" id="chart-section">
-          <h2 class="section-title">Gastos por Categoría</h2>
-          <div class="chart-container" id="category-chart">
-            <div class="chart-empty">Sin datos aún</div>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
+    </main>
 
-      <div class="right-panel">
-        <section class="card transactions-card" id="transactions-section">
-          <div class="section-header">
-            <h2 class="section-title">Movimientos</h2>
-            <span class="transaction-count" id="transaction-count">0</span>
-          </div>
-          <div class="transactions-list" id="transactions-list">
-            <div class="empty-state">
-              <div class="empty-icon">📭</div>
-              <p>No hay movimientos registrados</p>
-              <p class="empty-hint">Agregá tu primer ingreso o gasto</p>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
-
-    <div class="toast" id="toast">
-      <span class="toast-icon" id="toast-icon"></span>
-      <span class="toast-message" id="toast-message"></span>
-    </div>
+    <!-- Notificaciones Toast -->
+    <div class="toast-container" id="toast-container"></div>
   </div>
 
   <script src="app.js"></script>

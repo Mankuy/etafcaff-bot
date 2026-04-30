@@ -1,15 +1,16 @@
 // ═══════════════════════════════════════════════════
-//  FINANZAS DASHBOARD - App Logic
+//  CAJA ETAFCAFF - App Logic
 // ═══════════════════════════════════════════════════
 
 const API = '';
 
 // ─── State ───────────────────────────────────────
-let currentType = 'egreso';
 let transactions = [];
 
 // ─── DOM Elements ────────────────────────────────
 const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => document.querySelectorAll(sel);
+
 const balanceEl = $('#balance-amount');
 const balanceSubEl = $('#balance-subtitle');
 const incomeEl = $('#income-amount');
@@ -19,20 +20,34 @@ const txCountEl = $('#transaction-count');
 const chartEl = $('#category-chart');
 const form = $('#transaction-form');
 const dateInput = $('#input-date');
-const toastEl = $('#toast');
-const toastIconEl = $('#toast-icon');
-const toastMsgEl = $('#toast-message');
 const btnSubmit = $('#btn-submit');
 const btnTextEl = $('.btn-text');
+const themeToggleBtn = $('#theme-toggle');
 
 // ─── Init ────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   setDefaultDate();
   setHeaderDate();
-  setupTypeToggle();
   setupForm();
   loadData();
 });
+
+// ─── Theme Management ────────────────────────────
+function initTheme() {
+  const savedTheme = localStorage.getItem('etafcaff-theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+
+  themeToggleBtn.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('etafcaff-theme', newTheme);
+  });
+}
 
 function setDefaultDate() {
   const today = new Date().toISOString().split('T')[0];
@@ -46,31 +61,24 @@ function setHeaderDate() {
   $('#header-date').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
 }
 
-// ─── Type Toggle ─────────────────────────────────
-function setupTypeToggle() {
-  const btns = document.querySelectorAll('.type-btn');
-  btns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      btns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentType = btn.dataset.type;
-      btnTextEl.textContent = currentType === 'egreso' ? 'Agregar Gasto' : 'Agregar Ingreso';
-    });
-  });
-}
-
 // ─── Form Submit ─────────────────────────────────
 function setupForm() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const typeRadios = document.getElementsByName('tx-type');
+    let currentType = 'egreso';
+    for (const radio of typeRadios) {
+      if (radio.checked) currentType = radio.value;
+    }
 
     const amount = parseFloat($('#input-amount').value);
     const description = $('#input-description').value.trim();
     const category = $('#input-category').value;
     const date = dateInput.value;
 
-    if (!amount || amount <= 0) return showToast('Ingresá un monto válido', '⚠️');
-    if (!description) return showToast('Ingresá una descripción', '⚠️');
+    if (!amount || amount <= 0) return showToast('Ingresa un monto válido', '⚠️');
+    if (!description) return showToast('Ingresa una descripción', '⚠️');
 
     btnSubmit.disabled = true;
     btnTextEl.textContent = 'Guardando...';
@@ -104,7 +112,7 @@ function setupForm() {
       showToast(err.message, '❌');
     } finally {
       btnSubmit.disabled = false;
-      btnTextEl.textContent = currentType === 'egreso' ? 'Agregar Gasto' : 'Agregar Ingreso';
+      btnTextEl.textContent = 'Registrar';
     }
   });
 }
@@ -129,7 +137,7 @@ async function loadData() {
     renderChart(summary);
   } catch (err) {
     console.error('Error loading data:', err);
-    showToast('Error al cargar datos', '❌');
+    showToast('Error de conexión', '❌');
   }
 }
 
@@ -142,22 +150,30 @@ function renderBalance(data) {
   const pct = data.ingresos > 0
     ? Math.round((data.egresos / data.ingresos) * 100)
     : 0;
-  balanceSubEl.textContent = data.ingresos > 0
-    ? `Gastaste el ${pct}% de tus ingresos`
-    : 'Sin ingresos registrados';
+  
+  if (data.ingresos === 0) {
+    balanceSubEl.textContent = 'Sin ingresos registrados';
+  } else {
+    balanceSubEl.textContent = pct > 100 
+      ? `Excediste tus ingresos en un ${pct - 100}%` 
+      : `Has gastado el ${pct}% de tus ingresos`;
+  }
 
-  // Color change if negative
+  // Update balance card style dynamically based on negative/positive
+  const balanceCard = $('.balance-kpi');
   if (data.balance < 0) {
-    balanceEl.style.background = 'linear-gradient(135deg, #f43f5e, #fb7185)';
+    balanceCard.style.boxShadow = 'inset 0 4px 20px rgba(244, 63, 94, 0.1)';
+    balanceEl.style.background = 'linear-gradient(135deg, var(--accent-expense), #be123c)';
     balanceEl.style.webkitBackgroundClip = 'text';
   } else {
-    balanceEl.style.background = 'linear-gradient(135deg, #34d399, #22d3ee)';
+    balanceCard.style.boxShadow = 'none';
+    balanceEl.style.background = 'linear-gradient(135deg, var(--text-primary), var(--text-secondary))';
     balanceEl.style.webkitBackgroundClip = 'text';
   }
 }
 
 function animateNumber(el, target, showSign = false) {
-  const duration = 600;
+  const duration = 800; // Smoother duration
   const start = performance.now();
   const from = parseFloat(el.dataset.current || '0');
   el.dataset.current = target;
@@ -165,7 +181,8 @@ function animateNumber(el, target, showSign = false) {
   function update(now) {
     const elapsed = now - start;
     const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
+    // Custom easing: easeOutQuart
+    const eased = 1 - Math.pow(1 - progress, 4);
     const current = from + (target - from) * eased;
 
     const prefix = showSign && current < 0 ? '-$' : '$';
@@ -188,38 +205,45 @@ function renderTransactions(txList) {
   if (txList.length === 0) {
     txListEl.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">📭</div>
-        <p>No hay movimientos registrados</p>
-        <p class="empty-hint">Agregá tu primer ingreso o gasto</p>
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom: 1rem; opacity: 0.5;">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="3" y1="9" x2="21" y2="9"></line>
+          <line x1="9" y1="21" x2="9" y2="9"></line>
+        </svg>
+        <p>Tu caja está vacía</p>
+        <span>Registra tu primer movimiento</span>
       </div>`;
     return;
   }
 
   const categoryEmojis = {
-    'General': '📌', 'Comida': '🍔', 'Transporte': '🚗',
+    'General': '📌', 'Comida': '🍔', 'Transporte': '🚕',
     'Servicios': '📱', 'Entretenimiento': '🎬', 'Salud': '🏥',
     'Trabajo': '💼', 'Educacion': '📚', 'Hogar': '🏠', 'Otro': '📦'
   };
 
-  txListEl.innerHTML = txList.map(tx => {
-    const emoji = tx.type === 'ingreso' ? '📥' : '📤';
-    const sign = tx.type === 'ingreso' ? '+' : '-';
+  txListEl.innerHTML = txList.map((tx, index) => {
+    const isIncome = tx.type === 'ingreso';
+    const sign = isIncome ? '+' : '-';
     const catEmoji = categoryEmojis[tx.category] || '📌';
     const dateFormatted = formatDate(tx.date);
+    const delay = index * 0.05; // Staggered animation
 
     return `
-      <div class="tx-item" data-id="${tx.id}">
-        <div class="tx-type-indicator ${tx.type}">${emoji}</div>
+      <div class="tx-item ${tx.type}" data-id="${tx.id}" style="animation-delay: ${delay}s">
+        <div class="tx-icon-circle">${catEmoji}</div>
         <div class="tx-info">
-          <div class="tx-description">${escapeHtml(tx.description)}</div>
+          <div class="tx-desc">${escapeHtml(tx.description)}</div>
           <div class="tx-meta">
-            <span>${catEmoji} ${tx.category}</span>
+            <span>${tx.category}</span>
             <span>·</span>
             <span>${dateFormatted}</span>
           </div>
         </div>
         <div class="tx-amount ${tx.type}">${sign}$${parseFloat(tx.amount).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</div>
-        <button class="tx-delete" onclick="deleteTx(${tx.id})" title="Eliminar">✕</button>
+        <button class="tx-delete" onclick="deleteTx(${tx.id})" aria-label="Eliminar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
       </div>`;
   }).join('');
 }
@@ -235,8 +259,8 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-// ─── Delete Transaction ──────────────────────────
-async function deleteTx(id) {
+window.deleteTx = async function(id) {
+  if(!confirm('¿Eliminar este movimiento?')) return;
   try {
     const res = await fetch(`${API}/api/transactions/${id}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Error al eliminar');
@@ -252,21 +276,19 @@ function renderChart(summary) {
   const expenses = summary.filter(s => s.total_gastos > 0);
 
   if (expenses.length === 0) {
-    chartEl.innerHTML = '<div class="chart-empty">Sin datos de gastos aún</div>';
+    chartEl.innerHTML = `
+      <div class="empty-state" style="padding: 2rem;">
+        <span style="color: var(--text-muted); font-size: 0.9rem;">No hay gastos registrados</span>
+      </div>`;
     return;
   }
 
   const maxVal = Math.max(...expenses.map(s => s.total_gastos));
 
+  // CSS variables for chart colors to adapt automatically
   const colors = [
-    'linear-gradient(90deg, #f43f5e, #fb7185)',
-    'linear-gradient(90deg, #6366f1, #818cf8)',
-    'linear-gradient(90deg, #f59e0b, #fbbf24)',
-    'linear-gradient(90deg, #8b5cf6, #a78bfa)',
-    'linear-gradient(90deg, #ec4899, #f472b6)',
-    'linear-gradient(90deg, #14b8a6, #2dd4bf)',
-    'linear-gradient(90deg, #60a5fa, #93c5fd)',
-    'linear-gradient(90deg, #f97316, #fb923c)',
+    'var(--accent-expense)', 
+    '#f59e0b', '#8b5cf6', '#14b8a6', '#ec4899', '#3b82f6'
   ];
 
   chartEl.innerHTML = expenses.map((cat, i) => {
@@ -278,17 +300,24 @@ function renderChart(summary) {
       <div class="chart-bar-row">
         <span class="chart-bar-label">${cat.category}</span>
         <div class="chart-bar-track">
-          <div class="chart-bar-fill" style="width: ${pct}%; background: ${color};"></div>
+          <div class="chart-bar-fill" style="width: ${pct}%; background: ${color}; animation-delay: ${i * 0.1}s"></div>
         </div>
         <span class="chart-bar-value">${formatted}</span>
       </div>`;
   }).join('');
 }
 
-// ─── Toast ───────────────────────────────────────
+// ─── Toast Notifications ─────────────────────────
 function showToast(message, icon = '✅') {
-  toastIconEl.textContent = icon;
-  toastMsgEl.textContent = message;
-  toastEl.classList.add('show');
-  setTimeout(() => toastEl.classList.remove('show'), 3000);
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+  
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('hiding');
+    toast.addEventListener('animationend', () => toast.remove());
+  }, 3000);
 }
