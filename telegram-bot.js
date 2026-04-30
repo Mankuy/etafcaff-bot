@@ -36,22 +36,22 @@ function formatMoney(amount) {
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   bot.sendMessage(chatId,
-    `💰 *¡Bienvenido al Bot de Finanzas!*\n\n` +
+    `💰 <b>¡Bienvenido a Caja EtafCaff!</b>\n\n` +
     `Comandos disponibles:\n\n` +
-    `📥 /ingreso \\<monto\\> \\<descripción\\> \\[categoría\\]\n` +
-    `_Registrar un ingreso_\n\n` +
-    `📤 /gasto \\<monto\\> \\<descripción\\> \\[categoría\\]\n` +
-    `_Registrar un gasto_\n\n` +
+    `📥 /ingreso &lt;monto&gt; &lt;descripción&gt; [categoría]\n` +
+    `<i>Registrar un ingreso</i>\n\n` +
+    `📤 /gasto &lt;monto&gt; &lt;descripción&gt; [categoría]\n` +
+    `<i>Registrar un gasto</i>\n\n` +
     `💵 /balance\n` +
-    `_Ver balance actual_\n\n` +
+    `<i>Ver balance actual</i>\n\n` +
     `📋 /ultimos\n` +
-    `_Ver últimos 10 movimientos_\n\n` +
+    `<i>Ver últimos 10 movimientos</i>\n\n` +
     `📊 /resumen\n` +
-    `_Resumen por categoría_\n\n` +
-    `💡 *Ejemplo:*\n` +
+    `<i>Resumen por categoría</i>\n\n` +
+    `💡 <b>Ejemplo:</b>\n` +
     `/ingreso 50000 Cobro freelance Trabajo\n` +
     `/gasto 1500 Almuerzo Comida`,
-    { parse_mode: 'MarkdownV2' }
+    { parse_mode: 'HTML' }
   );
 });
 
